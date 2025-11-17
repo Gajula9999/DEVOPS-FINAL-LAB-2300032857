@@ -28,7 +28,7 @@ spec:
             - containerPort: 3306
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: "exam"     # ⚠️ change this for production
+              value: "exam"
             - name: MYSQL_DATABASE
               value: "examdb"
           volumeMounts:
@@ -36,7 +36,7 @@ spec:
               mountPath: /var/lib/mysql
       volumes:
         - name: mysql-storage
-          emptyDir: {}              # 💬 ChatGPT made the changes — added emptyDir to make YAML valid
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -75,13 +75,13 @@ spec:
           image: gajula9999/2300032857-lab-backend:latest
           ports:
             - containerPort: 2000
-          env:                     # 💬 ChatGPT made the changes — added env block to inject DB connection info
+          env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql-service:3306/projectdb"
+              value: "jdbc:mysql://mysql-service:3306/examdb"
             - name: SPRING_DATASOURCE_USERNAME
               value: "root"
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "password"
+              value: "exam"
 ---
 apiVersion: v1
 kind: Service
@@ -121,7 +121,6 @@ spec:
           image: gajula9999/2300032857-lab-frontend:latest
           ports:
             - containerPort: 80
-          #💬 ChatGPT made the changes — fixed URL (was localhost)
 ---
 apiVersion: v1
 kind: Service
