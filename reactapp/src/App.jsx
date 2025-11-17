@@ -1,176 +1,114 @@
-import { useState, useEffect } from "react";
-import "./App.css";
-
-function App() {
-  const BASE_URL = "http://localhost:2000/applicant";
-
-  const [applicants, setApplicants] = useState([]);
-  const [newApplicant, setNewApplicant] = useState({
-    name: "",
-    email: "",
-    position: ""
-  });
-
-  const [searchId, setSearchId] = useState("");
-  const [searchResult, setSearchResult] = useState(null);
-
-  // Load Applicants
-  const loadApplicants = async () => {
-    const res = await fetch(`${BASE_URL}/viewall`);
-    const data = await res.json();
-    setApplicants(data);
-  };
-
-  useEffect(() => {
-    loadApplicants();
-  }, []);
-
-  // Add Applicant
-  const addApplicant = async () => {
-    await fetch(`${BASE_URL}/add`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newApplicant)
-    });
-
-    alert("Applicant Added!");
-    setNewApplicant({ name: "", email: "", position: "" });
-    loadApplicants();
-  };
-
-  // Search
-  const searchApplicant = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/search/${searchId}`);
-
-      if (!res.ok) {
-        setSearchResult("NOT_FOUND");
-        return;
-      }
-
-      const data = await res.json();
-
-      if (!data || Object.keys(data).length === 0) {
-        setSearchResult("NOT_FOUND");
-      } else {
-        setSearchResult(data);
-      }
-    } catch (err) {
-      setSearchResult("NOT_FOUND");
-    }
-  };
-
-  return (
-    <div className="app-wrapper">
-      <h1 className="header">Job Applicant Management</h1>
-
-      {/* Add Applicant */}
-      <div className="glass-card">
-        <h2 className="section-title">Add New Applicant</h2>
-
-        <input
-          className="field"
-          type="text"
-          placeholder="Full Name"
-          value={newApplicant.name}
-          onChange={(e) =>
-            setNewApplicant({ ...newApplicant, name: e.target.value })
-          }
-        />
-
-        <input
-          className="field"
-          type="email"
-          placeholder="Email Address"
-          value={newApplicant.email}
-          onChange={(e) =>
-            setNewApplicant({ ...newApplicant, email: e.target.value })
-          }
-        />
-
-        <input
-          className="field"
-          type="text"
-          placeholder="Position Applied"
-          value={newApplicant.position}
-          onChange={(e) =>
-            setNewApplicant({ ...newApplicant, position: e.target.value })
-          }
-        />
-
-        <button className="primary-btn" onClick={addApplicant}>
-          Add Applicant
-        </button>
-      </div>
-
-      {/* View Applicants */}
-      <div className="glass-card">
-        <div className="flex-header">
-          <h2 className="section-title">All Applicants</h2>
-          <button className="secondary-btn" onClick={loadApplicants}>
-            Refresh
-          </button>
-        </div>
-
-        <table className="styled-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Position</th>
-            </tr>
-          </thead>
-          <tbody>
-            {applicants.map((a) => (
-              <tr key={a.id}>
-                <td>{a.id}</td>
-                <td>{a.name}</td>
-                <td>{a.email}</td>
-                <td>{a.position}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Search Applicant */}
-      <div className="glass-card">
-        <h2 className="section-title">Search Applicant</h2>
-
-        <div className="search-row">
-          <input
-            className="field"
-            type="number"
-            placeholder="Enter ID"
-            value={searchId}
-            onChange={(e) => setSearchId(e.target.value)}
-          />
-
-          <button className="primary-btn" onClick={searchApplicant}>
-            Search
-          </button>
-        </div>
-
-        {searchResult && (
-          <div className="result-box">
-            <h3>Search Result:</h3>
-
-            {searchResult === "NOT_FOUND" ? (
-              <p className="error-msg">❌ Applicant Not Found</p>
-            ) : (
-              <ul>
-                <li><b>ID:</b> {searchResult.id}</li>
-                <li><b>Name:</b> {searchResult.name}</li>
-                <li><b>Email:</b> {searchResult.email}</li>
-                <li><b>Position:</b> {searchResult.position}</li>
-              </ul>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+body {
+  background: linear-gradient(135deg, #89f7fe, #66a6ff);
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", Arial, sans-serif;
 }
 
-export default App;
+.app-wrapper {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  font-size: 38px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  margin-bottom: 25px;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.section-title {
+  font-size: 22px;
+  color: #003366;
+  margin-bottom: 15px;
+}
+
+.field {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  outline: none;
+  background: rgba(255,255,255,0.7);
+}
+
+.primary-btn {
+  background: #003e9c;
+  color: white;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: #002970;
+}
+
+.secondary-btn {
+  background: #00b894;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background: #009874;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.styled-table th {
+  background: #003e9c;
+  color: white;
+  padding: 12px;
+}
+
+.styled-table td {
+  padding: 12px;
+  background: rgba(255,255,255,0.7);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.styled-table tr:hover {
+  background: rgba(255,255,255,0.9);
+}
+
+.search-row {
+  display: flex;
+  gap: 12px;
+}
+
+.result-box {
+  background: rgba(255,255,255,0.6);
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+.error-msg {
+  font-size: 18px;
+  color: red;
+  font-weight: bold;
+}
